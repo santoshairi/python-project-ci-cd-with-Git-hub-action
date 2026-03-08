@@ -1,75 +1,76 @@
-.subtitle{
-color:#cbd5f5;
-margin-bottom:25px;
-font-size:1rem;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Zero To Hero</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+color:#e0e0e0
 }
 
-/* badge */
+.container{text-align:center;padding:2rem;max-width:640px}
+
+h1{
+font-size:2.5rem;
+background:linear-gradient(90deg,#00d2ff,#7b2ff7);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin-bottom:.5rem
+}
 
 .badge{
 display:inline-block;
-margin-bottom:25px;
-padding:8px 22px;
-border-radius:30px;
+margin:1rem 0;
+padding:.4rem 1.2rem;
 border:1px solid #7b2ff7;
-background:rgba(123,47,247,0.15);
-font-size:14px;
-color:#d8b4fe;
+border-radius:999px;
+font-size:.9rem;
+color:#c4b5fd
 }
-
-/* pipeline */
 
 .pipeline{
-margin-bottom:35px;
-font-size:14px;
-color:#9ca3af;
-letter-spacing:1px;
+margin-bottom:1.5rem;
+font-size:.9rem;
+color:#9ca3af
 }
-
-/* cards */
 
 .cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-gap:20px;
+display:flex;
+gap:1rem;
+justify-content:center;
+flex-wrap:wrap
 }
-
-/* card */
 
 .card{
-background:rgba(255,255,255,0.06);
-border:1px solid rgba(255,255,255,0.1);
-border-radius:14px;
-padding:25px;
-transition:all .35s ease;
-}
-
-.card:hover{
-transform:translateY(-8px);
-box-shadow:0 10px 25px rgba(0,0,0,0.5);
-background:rgba(255,255,255,0.1);
+background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.1);
+border-radius:12px;
+padding:1.4rem;
+min-width:150px
 }
 
 .card span{
 display:block;
-font-size:12px;
+font-size:.7rem;
 color:#9ca3af;
-letter-spacing:2px;
-margin-bottom:8px;
+margin-bottom:.4rem;
+letter-spacing:.1em
 }
 
 .card strong{
-font-size:20px;
+font-size:1.2rem;
+color:#f9fafb
 }
-
-/* footer */
-
-.footer{
-margin-top:35px;
-font-size:12px;
-color:#6b7280;
-}
-
 </style>
 </head>
 
@@ -77,34 +78,26 @@ color:#6b7280;
 
 <div class="container">
 
-<h1>CI-CD Pileline with GitHub Action</h1>
-
-<div class="badge">
-Josh Batch 10 V2 •Santosh Airi
-</div>
-
-<div class="subtitle">
-Building real DevOps pipelines with modern cloud tools
-</div>
+<h1>CI-CD With GitHub Action</h1>
+<div class="badge">Josh Batch 10 • Santosh Airi</div>
 
 <div class="pipeline">
 ⚙️ Built • 🧪 Tested • 🧹 Linted • 🚀 Deployed via GitHub Actions
 </div>
 
 <div class="cards">
-
 <div class="card">
-<span>FRAMEWORK</span>
+<span>Framework</span>
 <strong>Flask 3.1</strong>
 </div>
 
 <div class="card">
-<span>RUNTIME</span>
+<span>Runtime</span>
 <strong>Python 3.14</strong>
 </div>
 
 <div class="card">
-<span>CLOUD</span>
+<span>Deploy</span>
 <strong>AWS ECS</strong>
 </div>
 
@@ -112,22 +105,14 @@ Building real DevOps pipelines with modern cloud tools
 <span>CI/CD</span>
 <strong>GitHub Actions</strong>
 </div>
-
-<div class="card">
-<span>Docker</span>
-<strong>Docker Compose</strong>
 </div>
 
-<div class="card">
-<span>Runner</span>
-<strong>Self hosted</strong>
-</div>
 
-</div>
 
 <div class="footer">
 DevOps Learning Project • Deployed by Santosh
 </div>
+
 
 </div>
 
