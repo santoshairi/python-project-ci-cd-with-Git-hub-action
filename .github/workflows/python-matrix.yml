@@ -16,7 +16,13 @@ jobs:
         uses: actions/sertup-python@v5
         with:
           python-version: "3.13"
-          
+
+      - name: install dependencies
+        run: pip install -r requirements.txt
+
+      - name: run linter
+        run: flake8 app.py    
+            
         
     
     
