@@ -1,0 +1,22 @@
+name: Python lint
+
+on:
+  push:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+    steps:
+      - name: setup python
+        uses: actions/sertup-python@v5
+        with:
+          python-version: "3.13"
+          
+        
+    
+    
