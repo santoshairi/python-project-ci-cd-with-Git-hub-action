@@ -10,6 +10,3 @@ def hello_world():
 @app.route('/health')
 def health():
     return 'Server is up and running'
-
-
-app.run(debug=True, host='0.0.0.0', port=85)
