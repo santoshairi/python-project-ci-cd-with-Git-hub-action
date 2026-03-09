@@ -1,139 +1,172 @@
-# GitHub Actions: Zero to Hero
+#  DevSecOps CI/CD Pipeline with GitHub Actions
 
-A hands-on repo to learn GitHub Actions from scratch. Each workflow covers a real-world concept — start from the top and work your way down.
+A hands-on project demonstrating a **production-style DevSecOps CI/CD pipeline** built entirely using **GitHub Actions**.
 
-## What's Inside
+This project shows how modern DevOps pipelines integrate **security scanning, testing, containerization, and automated deployment** into a single workflow.
 
-This repo contains a **Flask web app** with a full **CI/CD + DevSecOps pipeline** built entirely using GitHub Actions.
+---
+
+#  Project Overview
+
+This repository contains a **Flask web application** with a full **CI/CD + DevSecOps pipeline**.
 
 ```
-app.py                  → Flask app (source code)
+app.py                  → Flask application
 Dockerfile              → Container image definition
-docker-compose.yml      → Production deployment config
-templates/index.html    → App frontend
-index.html              → Portfolio static site
-requirements.txt        → Python dependencies (flask, flake8, bandit, gunicorn, pytest)
-test_app.py             → Route tests (pytest)
+docker-compose.yml      → Production deployment configuration
+templates/index.html    → Application frontend
+requirements.txt        → Python dependencies
+test_app.py             → Application tests (pytest)
 ```
 
-## Workflows
+---
 
-### Part 1 — Fundamentals
+# ⚙️ DevSecOps Pipeline
 
-| # | Workflow | Concepts Covered | What It Does |
-|---|---------|-----------------|-------------|
-| 1 | [Hello](.github/workflows/hello.yml) | `workflow_dispatch`, `pull_request`, multiple jobs, runners, parallel execution | Your first workflow — runs echo commands across two jobs |
-| 2 | [CICD](.github/workflows/cicd.yml) | `workflow_dispatch` inputs, `type: choice`, `needs` (job dependencies), `if` conditionals | Simulates a CI/CD pipeline (code → build → test → deploy) with manual environment selection |
-| 3 | [Portfolio Deploy](.github/workflows/portfolio-deploy.yml) | `permissions`, pre-built actions (`checkout`, `configure-pages`, `deploy-pages`), environments, deployment URLs | Deploys a static site to GitHub Pages using official actions |
-| 4 | [Python Lint](.github/workflows/python-matrix.yml) | `strategy.matrix`, `fail-fast: false`, `actions/setup-python`, dependency install | Lints `app.py` with flake8 across Python 3.9–3.13 in parallel |
-| 5 | [Docker Build & Push](.github/workflows/docker-build-push.yml) | `workflow_call` (reusable workflow), `secrets`, `vars`, `docker/login-action`, `docker/build-push-action`, multi-tag images | Builds a Docker image and pushes to Docker Hub with branch, latest, and SHA tags |
-| 6 | [Deploy App](.github/workflows/deploy-app.yml) | `workflow_run` (chained workflows), `self-hosted` runners, `env` context, Docker Compose | Auto-deploys the Flask app on a self-hosted server after Docker image is pushed |
-
-### Part 2 — DevSecOps Pipeline
-
-A production-grade security pipeline composed from reusable workflows (`workflow_call`). Triggered on push to `main`.
+The pipeline is composed of **reusable workflows (`workflow_call`)** and is triggered on **push to the `main` branch**.
 
 ```
-push to main
-    ├── Code Quality ──── flake8 + bandit SAST (matrix: 3.11–3.13)
-    ├── Secrets Scan ──── gitleaks (full git history)
-    ├── Dependency Scan ─ pip-audit (package CVEs)
+Push to main
+    ├── Code Quality ──── flake8 + bandit (lint + SAST)
+    ├── Secrets Scan ──── gitleaks (detect leaked secrets)
+    ├── Dependency Scan ─ pip-audit (dependency vulnerabilities)
     ├── Docker Lint ───── hadolint (Dockerfile best practices)
-    └── Tests ─────────── pytest (route tests)
-            │ (all five must pass)
-            ▼
-        Docker Build & Push ── build image, push to Docker Hub
+    └── Tests ─────────── pytest (application tests)
             │
             ▼
-        Image Scan ─────────── Trivy (CRITICAL + HIGH CVEs)
+        Docker Build & Push ── build image and push to Docker Hub
             │
             ▼
-        Deploy to Server ───── SSH into EC2, docker compose up
+        Image Scan ─────────── Trivy (container vulnerabilities)
+            │
+            ▼
+        Deploy to Server ───── SSH into AWS EC2 and run docker compose
 ```
 
-| # | Workflow | Concepts Covered | What It Does |
-|---|---------|-----------------|-------------|
-| 7 | [DevSecOps Pipeline](.github/workflows/devsecops-pipeline.yml) | `on: push`, `workflow_call` composition, `needs` for stage gating, `secrets: inherit` | Orchestrator — chains all security scans → build → deploy |
-| 8 | [Code Quality](.github/workflows/code-quality.yml) | `workflow_call`, matrix strategy, linting + SAST in one job | Runs flake8 (lint) and bandit (SAST) across Python 3.11–3.13 |
-| 9 | [Secrets Scan](.github/workflows/secrets-scan.yml) | `workflow_call`, `fetch-depth: 0` (full clone), `GITHUB_TOKEN`, third-party action secrets | Scans full git history for leaked secrets using gitleaks |
-| 10 | [Dependency Scan](.github/workflows/dependency-scan.yml) | `workflow_call`, `pip-audit`, vulnerability databases | Audits Python packages for known CVEs |
-| 11 | [Docker Lint](.github/workflows/docker-lint.yml) | `workflow_call`, `hadolint/hadolint-action` | Validates Dockerfile against best practices |
-| 12 | [Image Scan](.github/workflows/image-scan.yml) | `workflow_call`, `aquasecurity/trivy-action`, `severity` filtering, `exit-code: 1` | Scans pushed Docker image for CRITICAL and HIGH CVEs |
-| 13 | [Deploy to Server](.github/workflows/deploy-to-server.yml) | `workflow_call`, `appleboy/ssh-action`, `appleboy/scp-action`, remote Docker Compose | SSHs into EC2, copies docker-compose, deploys the app |
-| 14 | [Tests](.github/workflows/tests.yml) | `workflow_call`, `pytest`, Flask test client | Runs pytest against Flask routes (/, /health) |
+---
 
-## Concepts Cheat Sheet
+# 🛠 Tools & Technologies
 
-| Concept | Where to Find It |
-|---------|-----------------|
-| Push trigger | [devsecops-pipeline.yml](.github/workflows/devsecops-pipeline.yml) |
-| Pull request trigger (`pull_request`) | [hello.yml](.github/workflows/hello.yml) |
-| Manual trigger (`workflow_dispatch`) | [hello.yml](.github/workflows/hello.yml), [cicd.yml](.github/workflows/cicd.yml) |
-| Input parameters (`type: choice`) | [cicd.yml](.github/workflows/cicd.yml) |
-| Job dependencies (`needs`) | [cicd.yml](.github/workflows/cicd.yml), [devsecops-pipeline.yml](.github/workflows/devsecops-pipeline.yml) |
-| Conditional execution (`if`) | [cicd.yml](.github/workflows/cicd.yml), [deploy-app.yml](.github/workflows/deploy-app.yml) |
-| Permissions | [portfolio-deploy.yml](.github/workflows/portfolio-deploy.yml) |
-| Environments & deployment URLs | [portfolio-deploy.yml](.github/workflows/portfolio-deploy.yml) |
-| Matrix strategy | [python-matrix.yml](.github/workflows/python-matrix.yml), [code-quality.yml](.github/workflows/code-quality.yml) |
-| Reusable workflows (`workflow_call`) | [docker-build-push.yml](.github/workflows/docker-build-push.yml), all Part 2 workflows |
-| `secrets: inherit` | [devsecops-pipeline.yml](.github/workflows/devsecops-pipeline.yml) |
-| Chained workflows (`workflow_run`) | [deploy-app.yml](.github/workflows/deploy-app.yml) |
-| Secrets & variables | [docker-build-push.yml](.github/workflows/docker-build-push.yml), [secrets-scan.yml](.github/workflows/secrets-scan.yml) |
-| Self-hosted runners | [deploy-app.yml](.github/workflows/deploy-app.yml) |
-| Docker build & push | [docker-build-push.yml](.github/workflows/docker-build-push.yml) |
-| Docker Compose deploy | [deploy-app.yml](.github/workflows/deploy-app.yml), [deploy-to-server.yml](.github/workflows/deploy-to-server.yml) |
-| SSH remote deployment | [deploy-to-server.yml](.github/workflows/deploy-to-server.yml) |
-| SAST (bandit) | [code-quality.yml](.github/workflows/code-quality.yml) |
-| Dependency vulnerability scan | [dependency-scan.yml](.github/workflows/dependency-scan.yml) |
-| Container image scanning (Trivy) | [image-scan.yml](.github/workflows/image-scan.yml) |
-| Dockerfile linting (hadolint) | [docker-lint.yml](.github/workflows/docker-lint.yml) |
-| Secrets detection (gitleaks) | [secrets-scan.yml](.github/workflows/secrets-scan.yml) |
-| Testing with pytest | [tests.yml](.github/workflows/tests.yml) |
+| Tool | Purpose |
+|-----|------|
+| GitHub Actions | CI/CD automation |
+| Docker | Containerization |
+| Gitleaks | Secrets detection |
+| Bandit | Python SAST security scanning |
+| pip-audit | Dependency vulnerability scanning |
+| Hadolint | Dockerfile linting |
+| Trivy | Container image vulnerability scanning |
+| AWS EC2 | Application deployment |
+| Docker Compose | Container orchestration |
+| SSH | Remote server deployment |
+| Python / Flask | Application framework |
 
-## Getting Started
+---
 
-1. **Fork this repo**
-2. **Set up secrets** — Go to repo Settings → Secrets and Variables → Actions:
-   - Secret: `DOCKERHUB_TOKEN` (your Docker Hub access token)
-   - Secret: `EC2_SSH_HOST`, `EC2_SSH_USER`, `EC2_SSH_PRIVATE_KEY` (for server deploy)
-   - Secret: `GITLEAKS_LICENSE` (for gitleaks action)
-   - Variable: `DOCKERHUB_USER` (your Docker Hub username)
-3. **Push to main** — the DevSecOps pipeline triggers automatically
+# 📂 Workflows
 
-> **Note:** Deploy and image-scan jobs will fail until you configure your own server and Docker Hub secrets. This is expected — the CI jobs (code quality, tests, scans) will work out of the box.
-4. **Try manual triggers** — go to Actions tab → pick a workflow → Run workflow
-5. **Read each workflow file** — they are commented for learning
+| # | Workflow | Description |
+|---|---------|-------------|
+| 1 | DevSecOps Pipeline | Main workflow that orchestrates all pipeline stages |
+| 2 | Code Quality | Runs flake8 and bandit for linting and security checks |
+| 3 | Secrets Scan | Detects secrets using Gitleaks |
+| 4 | Dependency Scan | Scans Python dependencies for vulnerabilities |
+| 5 | Docker Lint | Validates Dockerfile using Hadolint |
+| 6 | Image Scan | Scans container images using Trivy |
+| 7 | Deploy to Server | Deploys the application to AWS EC2 |
+| 8 | Tests | Runs pytest tests for the application |
 
-## Repo Structure
+---
+
+# 🔐 Security in CI/CD
+
+Security checks integrated in the pipeline:
+
+- 🔐 Secrets detection with **Gitleaks**
+- 📦 Dependency vulnerability scanning with **pip-audit**
+- 🐳 Dockerfile best practices using **Hadolint**
+- 🛡 Container image vulnerability scanning using **Trivy**
+
+---
+
+#  Deployment
+
+Deployment is automated using **SSH to AWS EC2**.
+
+Deployment process:
+
+1. Connect to EC2 server via SSH  
+2. Pull the latest Docker image  
+3. Stop the running container  
+4. Deploy the updated container using Docker Compose  
+
+---
+
+#  Required GitHub Secrets
+
+Add the following secrets in:
+
+**Repository → Settings → Secrets → Actions**
+
+```
+DOCKERHUB_USER
+DOCKERHUB_TOKEN
+EC2_SSH_HOST
+EC2_SSH_USER
+EC2_SSH_PRIVATE_KEY
+```
+
+---
+
+# 📁 Repository Structure
 
 ```
 .
 ├── .github/workflows/
-│   │
-│   │  # Part 1 — Fundamentals
-│   ├── hello.yml               # 1. Basics — jobs, runners, echo
-│   ├── cicd.yml                # 2. Manual CI/CD — inputs, needs, if
-│   ├── portfolio-deploy.yml    # 3. GitHub Pages — permissions, environments
-│   ├── python-matrix.yml       # 4. Matrix — parallel linting
-│   ├── docker-build-push.yml   # 5. Docker CI — build, tag, push (reusable)
-│   ├── deploy-app.yml          # 6. Docker CD — workflow_run, self-hosted
-│   │
-│   │  # Part 2 — DevSecOps Pipeline
-│   ├── devsecops-pipeline.yml  # 7. Orchestrator — chains all scans → build → deploy
-│   ├── code-quality.yml        # 8. flake8 + bandit (lint + SAST)
-│   ├── secrets-scan.yml        # 9. gitleaks (secrets in code)
-│   ├── dependency-scan.yml     # 10. pip-audit (package CVEs)
-│   ├── docker-lint.yml         # 11. hadolint (Dockerfile checks)
-│   ├── image-scan.yml          # 12. Trivy (container image CVEs)
-│   ├── deploy-to-server.yml   # 13. SSH + SCP deploy to EC2
-│   └── tests.yml              # 14. pytest (route tests)
+│   ├── devsecops-pipeline.yml
+│   ├── code-quality.yml
+│   ├── secrets-scan.yml
+│   ├── dependency-scan.yml
+│   ├── docker-lint.yml
+│   ├── image-scan.yml
+│   ├── deploy-to-server.yml
+│   └── tests.yml
 │
-├── app.py                      # Flask application
-├── templates/index.html        # Flask template
-├── Dockerfile                  # Container definition
-├── docker-compose.yml          # Compose config
-├── index.html                  # Portfolio static site
-├── requirements.txt            # Python dependencies
-├── test_app.py                 # pytest route tests
-└── CNAME                       # Custom domain for GitHub Pages
+├── app.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── templates/index.html
+└── test_app.py
 ```
+
+---
+
+# 📊 CI/CD Pipeline Summary
+
+⚙️ Built  
+🧪 Tested  
+🧹 Linted  
+🔍 Code Quality Checked  
+🔐 Secrets Scanned (Gitleaks)  
+📦 Dockerized  
+🛡 Container Security Scan (Trivy)  
+🚀 Deployed via GitHub Actions
+
+---
+
+# Learning Outcomes
+
+Through this project I practiced:
+
+- GitHub Actions CI/CD pipeline design
+- DevSecOps security integration
+- Docker containerization
+- Container vulnerability scanning
+- Automated deployment to cloud infrastructure
+
+---
+Special thanks to **Shubham Bhai** for guidance and mentorship throughout this DevSecOps learning journey.
+---
+
+⭐ If you found this project useful, consider giving it a **star**.
