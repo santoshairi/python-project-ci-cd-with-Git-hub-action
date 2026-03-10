@@ -75,6 +75,7 @@ Push to main
 | 6 | Image Scan | Scans container images using Trivy |
 | 7 | Deploy to Server | Deploys the application to AWS EC2 |
 | 8 | Tests | Runs pytest tests for the application |
+| 9 | Docker-build-push | Code build and push to docker hub |
 
 ---
 
@@ -128,6 +129,7 @@ EC2_SSH_PRIVATE_KEY
 │   ├── secrets-scan.yml
 │   ├── dependency-scan.yml
 │   ├── docker-lint.yml
+│   └── docker-build-push.yml
 │   ├── image-scan.yml
 │   ├── deploy-to-server.yml
 │   └── tests.yml
